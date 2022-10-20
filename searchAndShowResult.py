@@ -42,8 +42,8 @@ def on_message(client, userdata, msg):
     getmsg=msg.payload.decode('utf-8').split()
     print(getmsg)
     listbox.delete(0,'end')
-    listbox.insert('end',"姓名：%s"%(getmsg[1]))
-    listbox.insert('end',"身分證字號：%s"%(getmsg[2]))
+    getname=getmsg[1][0]+"◯"+getmsg[1][2]
+    listbox.insert('end',"姓名：%s"%(getname)
     listbox.insert('end',"電子標籤唯一碼：%s"%(getmsg[3]))
     listbox.insert('end',"床號：%s"%(getmsg[4]))
     listbox.insert('end',"倒數第二個通過的門：%s"%(getmsg[5]))
