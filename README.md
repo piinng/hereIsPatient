@@ -130,3 +130,7 @@
 
 >二、病人資料顯示
 >>函式名稱為`on_message`，透過MQTT接收topic為`/IEYI/hrjh/search/return`的訊息，並將病人的所在區域及相關資訊顯示在圖形化視窗第二列的顯示方塊中。
+
+---
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/CC_BY-NC-SA.svg/2880px-CC_BY-NC-SA.svg.png"></img>
