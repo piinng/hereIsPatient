@@ -43,7 +43,7 @@ def on_message(client, userdata, msg):
     print(getmsg)
     listbox.delete(0,'end')
     getname=getmsg[1][0]+"◯"+getmsg[1][2]
-    listbox.insert('end',"姓名：%s"%(getname)
+    listbox.insert('end',"姓名：%s"%(getname))
     listbox.insert('end',"電子標籤唯一碼：%s"%(getmsg[3]))
     listbox.insert('end',"床號：%s"%(getmsg[4]))
     listbox.insert('end',"倒數第二個通過的門：%s"%(getmsg[5]))
