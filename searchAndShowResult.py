@@ -1,4 +1,5 @@
 import tkinter
+import tkinter.font
 from numpy import delete
 import paho.mqtt.client as mqtt
 import random
@@ -19,14 +20,14 @@ def setObject():
     global bedno
     bedno=tkinter.StringVar()
     global bednobox
-    bednobox=tkinter.Entry(searchWin, textvariable=bedno,width=20)
+    bednobox=tkinter.Entry(searchWin, textvariable=bedno,width=20,font=tkinter.font.Font(size=36))
     global searchbutton
-    searchbutton=tkinter.Button(searchWin, text='查詢', command=mqttsearch,width=5)
+    searchbutton=tkinter.Button(searchWin, text='查詢', command=mqttsearch,width=5,font=tkinter.font.Font(size=36))
 
     bednobox.grid(row=0,column=0)
     searchbutton.grid(row=0,column=1)
     global listbox
-    listbox=tkinter.Listbox(searchWin,width=30)
+    listbox=tkinter.Listbox(searchWin,width=30,font=tkinter.font.Font(size=36))
     listbox.grid(row=1,column=0,columnspan=2)
 
 def mqttsearch():
