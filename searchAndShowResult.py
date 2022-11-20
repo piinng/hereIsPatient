@@ -7,6 +7,7 @@ import json
 import datetime 
 import time
 import os
+from tkinter import messagebox
 
 # 設置日期時間的格式
 ISOTIMEFORMAT = '%m/%d %H:%M:%S'
@@ -39,6 +40,7 @@ def setObject():
     listbox.grid(row=1,column=0,columnspan=2)
 
 def mqttsearch():
+    print("查詢鍵被按下")
     client.publish("/IEYI/hrjh/search/send", bednobox.get())
 
 def on_connect(client, userdata, flags, rc):
@@ -60,24 +62,22 @@ def on_message(client, userdata, msg):
         listbox.insert('end',"姓名：%s"%(getname))
         listbox.insert('end',"電子標籤唯一碼：%s"%(getmsg[3]))
         listbox.insert('end',"床號：%s"%(getmsg[4]))
-        # listbox.insert('end',"倒數第二個通過的門：%s"%(getmsg[5]))
-        # listbox.insert('end',"倒數第二個通過門的時間：%s"%(getmsg[6]))
-        # listbox.insert('end',"最後一次通過的門：%s"%(getmsg[7]))
-        # listbox.insert('end',"最後一次通過門的時間：%s"%(getmsg[8]))
         listbox.insert('end',"所在區域：%s"%(getmsg[6]))
-    elif(msg.topic=="/IEYI/hrjh/aram/search/danger"):
-        getmsg=msg.payload.decode('utf-8').split()
-        if(getmsg[6]=="EL"):
-            notify("禁區警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n跑到逃生梯了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
-        if(getmsg[6]=="NS"):
-            notify("禁區警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n跑進護理站了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
-    elif(msg.topic=="/IEYI/hrjh/aram/search/dementia"):
-        getmsg=msg.payload.decode('utf-8').split()
-        notify("失智警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n離開醫院了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+    # elif(msg.topic=="/IEYI/hrjh/aram/search/danger"):
+    #     getmsg=msg.payload.decode('utf-8').split()
+    #     if(getmsg[6]=="EL"):
+    #         notify("禁區警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n跑到逃生梯了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+    #     if(getmsg[6]=="NS"):
+    #         notify("禁區警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n跑進護理站了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+    # elif(msg.topic=="/IEYI/hrjh/aram/search/dementia"):
+    #     getmsg=msg.payload.decode('utf-8').split()
+    #     notify("失智警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n離開醫院了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
     elif(msg.topic=="/IEYI/hrjh/aram/search/time"):
         getmsg=msg.payload.decode('utf-8').split()
         print(getmsg)
-        notify("時間警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        result=messagebox.showinfo("","姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        print(result)
+        # notify("時間警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
 
 # 初始化地端程式
 client = mqtt.Client()
