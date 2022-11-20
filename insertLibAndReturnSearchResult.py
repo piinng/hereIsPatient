@@ -1,5 +1,6 @@
 import paho.mqtt.client as mqtt
 import sqlite3
+import time
 db = sqlite3.connect('TEST.db')
 cursor=db.cursor()
 # 建立連線（接收到 CONNACK）的回呼函數
@@ -17,9 +18,8 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     if(msg.topic=="/rc522/A0"):
         #print("[{}]: {}".format(msg.topic, str(msg.payload)))
-        getaddr=str(msg.payload)[2:4]
-        gettime=str(msg.payload)[4:-15]
-        getUID=str(msg.payload)[-15:-1]
+        getUID=str(msg.payload)[2:8]
+        getaddr=str(msg.payload)[-3:-1]
         
         #get data of No
         a="SELECT NO FROM DATA WHERE UID='%s';"%(getUID)
@@ -28,51 +28,44 @@ def on_message(client, userdata, msg):
         getNo=int(list(cursor.fetchone())[0])
 
         #get data of last in No and change secondlast to last
-        a="SELECT LAST FROM DATA WHERE NO=%d;"%(getNo)
+        # a="SELECT LAST FROM DATA WHERE NO=%d;"%(getNo)
+        # cursor.fetchall()
+        # cursor.execute(a)
+        # lasttemp=list(cursor.fetchone())[0]
+        # a="UPDATE DATA SET SECONDLAST='%s' WHERE NO=%d;"%(lasttemp,getNo)
+        # cursor.execute(a)
+
+        #change location to getaddr
+        a="UPDATE DATA SET LOCATION='%s' WHERE NO=%d;"%(getaddr,getNo)
         cursor.fetchall()
-        cursor.execute(a)
-        lasttemp=list(cursor.fetchone())[0]
-        a="UPDATE DATA SET SECONDLAST='%s' WHERE NO=%d;"%(lasttemp,getNo)
         cursor.execute(a)
 
-        #change last to getaddr
-        a="UPDATE DATA SET LAST='%s' WHERE NO=%d;"%(getaddr,getNo)
-        cursor.fetchall()
-        cursor.execute(a)
-
-        #get data of lastTime in No and change secondlastTime to lastTime
-        a="SELECT LASTTIME FROM DATA WHERE NO=%d;"%(getNo)
-        cursor.fetchall()
-        cursor.execute(a)
-        lasttimetemp=list(cursor.fetchone())[0]
-        a="UPDATE DATA SET SECONDLASTTIME='%s' WHERE NO=%d;"%(lasttimetemp,getNo)
-        cursor.fetchall()
-        cursor.execute(a)
 
         a="SELECT TYPE FROM DATA WHERE NO=%d;"%(getNo)
         cursor.fetchall()
         cursor.execute(a)
         gettype=list(cursor.fetchone())[0]
-        if(gettype==1&getaddr=="DO"):
+        if(gettype==1 and getaddr=="OH"):
             #發送失智警報
             a="SELECT * FROM DATA WHERE NO='%s'"%(getNo)
             cursor.fetchall()
             cursor.execute(a)
             xs=list(cursor.fetchone())
             s = ' '.join(str(x) for x in xs)
-            print(s)
+            
             client.publish("/IEYI/hrjh/aram/search/dementia", str(s))
-        if(getaddr=="danger"):
+        if(getaddr=="NS" or getaddr=="EL"):
+            #禁區警報
             a="SELECT * FROM DATA WHERE NO='%s'"%(getNo)
             cursor.fetchall()
             cursor.execute(a)
             xs=list(cursor.fetchone())
             s = ' '.join(str(x) for x in xs)
-            print(s)
+            
             client.publish("/IEYI/hrjh/aram/search/danger", str(s))
 
         #change lastTime to gettime
-        a="UPDATE DATA SET LASTTIME='%s' WHERE NO=%d;"%(gettime,getNo)
+        a="UPDATE DATA SET LASTTIME='%s' WHERE NO=%d;"%(int(time.time()),getNo)
         cursor.fetchall()
         cursor.execute(a)
 
@@ -85,7 +78,7 @@ def on_message(client, userdata, msg):
         cursor.execute(a)
         xs=list(cursor.fetchone())
         s = ' '.join(str(x) for x in xs)
-        print(s)
+        
         client.publish("/IEYI/hrjh/search/return", str(s))
     elif(msg.topic=="/IEYI/hrjh/aram/lib/danger"):
         searchget=str(msg.payload)[2:-1]
@@ -94,7 +87,7 @@ def on_message(client, userdata, msg):
         cursor.execute(a)
         xs=list(cursor.fetchone())
         s = ' '.join(str(x) for x in xs)
-        print(s)
+        
         client.publish("/IEYI/hrjh/aram/search/danger", str(s))
     elif(msg.topic=="/IEYI/hrjh/check/getlist"):
         a="SELECT NAME FROM DATA"
@@ -123,4 +116,26 @@ client.username_pw_set("","")
 client.connect("test.mosquitto.org", 1883)
 
 # 進入無窮處理迴圈
-client.loop_forever()
+client.loop_start()
+while True:
+    atime="SELECT LASTTIME, LOCATION, ID FROM DATA"
+    cursor.fetchall()
+    cursor.execute(atime)
+    timelist=cursor.fetchall()
+    count=0
+    for i in timelist:
+        #print(timelist[count])
+        if(timelist[count][1]=="WC"):
+            if((int(time.time())-timelist[count][0])>10):
+                atime="SELECT * FROM DATA WHERE ID='%s'"%(timelist[count][2])
+                cursor.fetchall()
+                cursor.execute(atime)
+                xs=list(cursor.fetchone())
+                s = ' '.join(str(x) for x in xs)
+                print(s)
+                client.publish("/IEYI/hrjh/aram/search/time", str(s))
+                atime="UPDATE DATA SET LASTTIME=%d WHERE ID='%s'"%(int(time.time()),timelist[count][2])
+                cursor.fetchall()
+                cursor.execute(atime)
+                print(timelist[count])
+        count+=1
