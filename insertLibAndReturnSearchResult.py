@@ -25,7 +25,7 @@ def on_message(client, userdata, msg):
     global msgtopic
     global msgpayload
     msgtopic=str(msg.topic)
-    msgpayload=str(msg.payload)
+    msgpayload=str(msg.payload.decode('utf-8'))
     global onmessagestatus
     onmessagestatus=True
     print(onmessagestatus)
@@ -141,7 +141,7 @@ while True:
     for i in timelist:
         #print(timelist[count])
         if(timelist[count][1]=="WC"):
-            if((int(time.time())-timelist[count][0])>5):
+            if((int(time.time())-timelist[count][0])>10):
                 atime="SELECT * FROM DATA WHERE ID='%s'"%(timelist[count][2])
                 cursor.fetchall()
                 cursor.execute(atime)
@@ -165,8 +165,8 @@ while True:
         print(msgtopic)
         if(msgtopic=="/rc522/A0"):
             #print("[{}]: {}".format(msg.topic, str(msg.payload)))
-            getUID=str(msgpayload)[2:8]
-            getaddr=str(msgpayload)[-3:-1]
+            getUID=msgpayload.split()[2]
+            getaddr=msgpayload.split()[0]
             
             #get data of No
             a="SELECT NO FROM DATA WHERE UID='%s';"%(getUID)
@@ -202,6 +202,13 @@ while True:
                 s = ' '.join(str(x) for x in xs)
                 
                 client.publish("/IEYI/hrjh/aram/search/dementia", str(s))
+                a="SELECT LOCATION FROM DATA WHERE UID='%s'"%(searchget)
+                cursor.fetchall()
+                cursor.execute(a)
+                a="UPDATE DATA SET LOCATION='%s' WHERE UID='%s'"%(str(list(cursor.fetchone)[0])+"!",searchget)
+                cursor.execute(a)
+                db.commit()
+            
             if(getaddr=="NS" or getaddr=="EL"):
                 #禁區警報
                 a="SELECT * FROM DATA WHERE NO='%s'"%(getNo)
@@ -211,6 +218,12 @@ while True:
                 s = ' '.join(str(x) for x in xs)
                 
                 client.publish("/IEYI/hrjh/aram/search/danger", str(s))
+                a="SELECT LOCATION FROM DATA WHERE UID='%s'"%(searchget)
+                cursor.fetchall()
+                cursor.execute(a)
+                a="UPDATE DATA SET LOCATION='%s' WHERE UID='%s'"%(str(list(cursor.fetchone)[0])+"!",searchget)
+                cursor.execute(a)
+                db.commit()
 
             #change lastTime to gettime
             a="UPDATE DATA SET LASTTIME='%s' WHERE NO=%d;"%(int(time.time()),getNo)
@@ -228,24 +241,30 @@ while True:
             xs=list(cursor.fetchone())
             s = ' '.join(str(x) for x in xs)
             client.publish("/IEYI/hrjh/search/return", str(s))
-        # elif(msg.topic=="/IEYI/hrjh/aram/lib/danger"):
-        #     searchget=str(msg.payload)[2:-1]
+        # elif(msgtopic=="/IEYI/hrjh/aram/lib/danger"):
+        #     searchget=str(msgpayload)[2:-1]
         #     a="SELECT * FROM DATA WHERE UID='%s'"%(searchget)
         #     cursor.fetchall()
         #     cursor.execute(a)
         #     xs=list(cursor.fetchone())
         #     s = ' '.join(str(x) for x in xs)
-            
         #     client.publish("/IEYI/hrjh/aram/search/danger", str(s))
-        elif(msgtopic=="/IEYI/hrjh/check/getlist"):
-            a="SELECT NAME FROM DATA"
-            cursor.fetchall()
-            cursor.execute(a)
-            client.publish("IEYI/hrjh/check/returnlist",list(cursor.fetchall()))
-        elif(msgtopic=="/IEYI/hrjh/check/getUID"):
-            a="SELECT UID FROM DATA WHERE NAME='%s'"%(str(msgpayload)[2:-1])
-            cursor.fetchall()
-            cursor.execute(a)
-            client.publish("IEYI/hrjh/check/returnUID",str(list(cursor.fetchone())[0]))
+
+        #     a="SELECT LOCATION FROM DATA WHERE UID='%s'"%(searchget)
+        #     cursor.fetchall()
+        #     cursor.execute(a)
+        #     a="UPDATE DATA SET LOCATION='%s' WHERE UID='%s'"%(str(list(cursor.fetchone)[0])+"!",searchget)
+        #     cursor.execute(a)
+        #     db.commit()
+        # elif(msgtopic=="/IEYI/hrjh/check/getlist"):
+        #     a="SELECT NAME FROM DATA"
+        #     cursor.fetchall()
+        #     cursor.execute(a)
+        #     client.publish("IEYI/hrjh/check/returnlist",list(cursor.fetchall()))
+        # elif(msgtopic=="/IEYI/hrjh/check/getUID"):
+        #     a="SELECT UID FROM DATA WHERE NAME='%s'"%(str(msgpayload)[2:-1])
+        #     cursor.fetchall()
+        #     cursor.execute(a)
+        #     client.publish("IEYI/hrjh/check/returnUID",str(list(cursor.fetchone())[0]))
     
     time.sleep(1)
