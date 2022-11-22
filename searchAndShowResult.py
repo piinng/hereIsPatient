@@ -8,6 +8,7 @@ import datetime
 import time
 import os
 from tkinter import messagebox
+from playsound import playsound
 
 # 設置日期時間的格式
 ISOTIMEFORMAT = '%m/%d %H:%M:%S'
@@ -75,22 +76,27 @@ def on_message(client, userdata, msg):
     elif(msg.topic=="/IEYI/hrjh/aram/search/time"):
         getmsg=msg.payload.decode('utf-8').split()
         print(getmsg)
-        result=messagebox.showinfo("","姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過10秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        playsound('Resource/Tink.mp3')
+        result=messagebox.showinfo("","時間警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過10秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
         print(result)
-        # notify("時間警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        # notify("時間警報", "時間警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        
     elif(msg.topic=="/IEYI/hrjh/aram/search/danger"):
         getmsg=msg.payload.decode('utf-8').split()
         print(getmsg)
-        result=messagebox.showinfo("","姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n跑到%s了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4],getmsg[6]))
+        playsound('Resource/Tink.mp3')
+        result=messagebox.showinfo("","禁區警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n跑到%s了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4],getmsg[6]))
         print(result)
-        # notify("禁區警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        # notify("禁區警報", "禁區警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        
     elif(msg.topic=="/IEYI/hrjh/aram/search/dementia"):
         getmsg=msg.payload.decode('utf-8').split()
         print(getmsg)
-        result=messagebox.showinfo("","姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n跑出醫院了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        playsound('Resource/Tink.mp3')
+        result=messagebox.showinfo("","失智警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n跑出醫院了，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
         print(result)
-        # notify("失智警報", "姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
-    
+        # notify("失智警報", "失智警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        
 
 
 # 初始化地端程式
@@ -102,7 +108,7 @@ client.on_message = on_message
 client.username_pw_set("","")
 
 # 設定連線資訊(IP, Port, 連線時間)
-client.connect("test.mosquitto.org", 1883, 60)
+client.connect("192.168.1.87", 1883, 60)
 
 
 setObject()
