@@ -77,7 +77,7 @@ def on_message(client, userdata, msg):
         getmsg=msg.payload.decode('utf-8').split()
         print(getmsg)
         playsound('Resource/Tink.mp3')
-        result=messagebox.showinfo("","時間警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過10秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
+        result=messagebox.showinfo("","時間警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
         print(result)
         # notify("時間警報", "時間警報\n姓名：%s\n電子標籤唯一碼：%s\n床號：%s\n待在廁所超過5秒鐘，請過去查看！！"%((getmsg[1][0]+"◯"+getmsg[1][2]),getmsg[3],getmsg[4]))
         

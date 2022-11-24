@@ -28,8 +28,6 @@ def on_message(client, userdata, msg):
     msgpayload=str(msg.payload.decode('utf-8'))
     global onmessagestatus
     onmessagestatus=True
-    print(onmessagestatus)
-    print(msg.topic)
     """if(msg.topic=="/rc522/A0"):
         #print("[{}]: {}".format(msg.topic, str(msg.payload)))
         getUID=str(msg.payload)[2:8]
@@ -142,7 +140,7 @@ while True:
     for i in timelist:
         #print(timelist[count])
         if(timelist[count][1]=="廁所"):
-            if((int(time.time())-timelist[count][0])>10):
+            if((int(time.time())-timelist[count][0])>5):
                 atime="SELECT * FROM DATA WHERE ID='%s'"%(timelist[count][2])
                 cursor.fetchall()
                 cursor.execute(atime)
@@ -160,10 +158,8 @@ while True:
                 cursor.execute(atime)
                 db.commit()
         count+=1
-    print(onmessagestatus)
     if(onmessagestatus==True):
         onmessagestatus=False
-        print(msgtopic)
         if(msgtopic=="/rc522/A0"):
             #print("[{}]: {}".format(msg.topic, str(msg.payload)))
             print("有人通過")
@@ -276,4 +272,3 @@ while True:
         #     cursor.execute(a)
         #     client.publish("IEYI/hrjh/check/returnUID",str(list(cursor.fetchone())[0]))
     
-    time.sleep(1)
